@@ -1,35 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+    
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import Botcollection from './components/Botcollection';
+import BotDetails from './components/BotDetails';
+import { Routes, Route } from 'react-router-dom';
+import BotArmy from './components/BotArmy';
+import SortBar from './components/SortBar'; // Import the SortBar component
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [bots, setBots] = useState([]);
+  const [army, setArmy] = useState([]);
+  const [deletion, setDelition] = useState([])
+
+  useEffect(() => {
+    fetch("http://localhost:3000/bots")
+      .then(response => response.json())
+      .then(data => setBots(data))
+      .catch(error => console.error('Error fetching bots:', error));
+  }, []);
+
+  const handleAddToArmy = (bot) => {
+    setArmy(prevArmy => [...prevArmy, bot]);
+  };
+
+  const handleReleaseFromArmy = (bot) => {
+    setArmy(prevArmy => prevArmy.filter(item => item.id !== bot.id));
+    
+  };
+  const deleteBot = (bot) => {
+    fetch(`http://localhost:3000/bots/${bot.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => { 
+      setArmy(prevBots => prevBots.filter(item => item.id !== bot.id));
+      setBots(prevBots => prevBots.filter(item => item.id !== bot.id))
+    })
+    .then(data =>console.log(data))
+   
+  };
+  function sortBots (property) {
+ 
+    const sortedBots = bots.slice();
+    sortedBots.sort((a, b) => a[property] - b[property]);
+    setBots(sortedBots);
+  };
+
+  
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+       <SortBar sortBots={sortBots}  />
+      
+      <BotArmy army={army} handleReleaseFromArmy={handleReleaseFromArmy} deleteBot={deleteBot}/>
+      <h1 className='app-head'>Bot Army</h1>
+      <Routes>
+        <Route path='/' element={<Botcollection bots={bots} />} />
+        <Route path='/bots/:id' element={<BotDetails bots={bots} handleAddToArmy={handleAddToArmy} />} />
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;
