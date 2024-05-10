@@ -80,7 +80,7 @@ function handleAddArmy(bot) {
             className="ui mini red button"
             onClick={() => handleDelete(bot.id)}
           >
-            x
+            Delete Bot
           </button>
         </div>
       </div>
