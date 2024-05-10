@@ -8,7 +8,7 @@ function BotDetails({ bots, handleAddToArmy,deleteBot }) {
   const [addedToArmy, setAddedToArmy] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/bots/${id}`)
+    fetch(`http://localhost:5173/${id}`)
       .then(response => response.json())
       .then(data => {
         setBot(data);

@@ -10,8 +10,6 @@ function Botcollection({ bots }) {
 <BotCard bot={bot} />
 </Link>
     
-   
-    
   ));
 
   return (
